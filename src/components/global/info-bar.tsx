@@ -63,7 +63,7 @@ const InfoBar = ({ notifications, subAccountId, className, role }: Props) => {
             <SheetContent showX className="mr-4 mt-4 overflow-scroll pr-4">
               <SheetHeader className="text-left">
                 <SheetTitle>Notifications</SheetTitle>
-                <SheetDescription>
+                <SheetDescription className="!my-4">
                   {(role === "AGENCY_ADMIN" || role === "AGENCY_OWNER") && (
                     <Card className="flex items-center justify-between p-4">
                       Current Subaccount
@@ -75,7 +75,7 @@ const InfoBar = ({ notifications, subAccountId, className, role }: Props) => {
               {allNotifications?.map((notification) => (
                 <div
                   key={notification.id}
-                  className="mb-2 flex flex-col gap-y-2 overflow-x-scroll text-ellipsis"
+                  className="mb-2 flex flex-col gap-y-2 text-ellipsis"
                 >
                   <div className="flex gap-2">
                     <Avatar>
