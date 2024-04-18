@@ -1,6 +1,23 @@
-import { Notification, Prisma, Role } from "@prisma/client";
+import {
+  Contact,
+  Lane,
+  Notification,
+  Prisma,
+  Role,
+  Tag,
+  Ticket,
+  User,
+} from "@prisma/client";
+import { z } from "zod";
 import db from "./db";
-import { getAuthUserDetails, getMedia, getUserPermissions } from "./queries";
+import {
+  _getTicketsWithAllRelations,
+  getAuthUserDetails,
+  getMedia,
+  getPipelineDetails,
+  getTicketsWithTags,
+  getUserPermissions,
+} from "./queries";
 
 export type NotificationWithUser =
   | ({
@@ -44,3 +61,44 @@ export type UsersWithAgencySubAccountPermissionsSidebarOptions =
 export type GetMediaFiles = Prisma.PromiseReturnType<typeof getMedia>;
 
 export type CreateMediaType = Prisma.MediaCreateWithoutSubaccountInput;
+
+export const CreatePipelineFormSchema = z.object({
+  name: z.string().min(1),
+});
+
+export type TicketAndTags = Ticket & {
+  Tags: Tag[];
+  Assigned: User | null;
+  Customer: Contact | null;
+};
+
+export type LaneDetail = Lane & {
+  Tickets: TicketAndTags[];
+};
+
+export const LaneFormSchema = z.object({
+  name: z.string().min(1),
+});
+
+export type PipelineDetailsWithLanesCardsTagsTickets = Prisma.PromiseReturnType<
+  typeof getPipelineDetails
+>;
+
+export type TicketWithTags = Prisma.PromiseReturnType<
+  typeof getTicketsWithTags
+>;
+
+const currencyNumberRegex = /^\d+(\.\d{1,2})?$/;
+
+export const TicketFormSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().optional(),
+  value: z.string().refine((value) => currencyNumberRegex.test(value), {
+    message: "Value must be a valid price.",
+  }),
+});
+
+export type TicketDetails = Prisma.PromiseReturnType<
+  typeof _getTicketsWithAllRelations
+>;
+// export type PricesList = Stripe.ApiList<Stripe.Price>;
